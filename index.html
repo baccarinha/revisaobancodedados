@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questionário — Banco de Dados</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0e1a;
+    --surface: #13162a;
+    --surface2: #1a1e35;
+    --border: rgba(255,255,255,0.07);
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --correct: #22c55e;
+    --wrong: #f43f5e;
+    --text: #f0f0ff;
+    --muted: #7c7fa8;
+    --card-radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.3);
+    color: var(--accent2);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 1.2rem;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 0.75rem;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    margin-bottom: 2rem;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label { font-size: 13px; color: var(--muted); }
+  .progress-count { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent2); }
+
+  .progress-track {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    animation: slideUp 0.5s ease both;
+    transition: border-color 0.2s;
+  }
+
+  .question-card:hover { border-color: rgba(108,99,255,0.2); }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .q-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .q-status {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    transition: all 0.3s;
+    margin-left: auto;
+  }
+  .q-status.answered { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(108,99,255,0.5); }
+
+  .q-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Options */
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: transparent;
+    user-select: none;
+  }
+
+  .option:hover {
+    background: rgba(108,99,255,0.07);
+    border-color: rgba(108,99,255,0.25);
+  }
+
+  .option.selected {
+    background: rgba(108,99,255,0.12);
+    border-color: rgba(108,99,255,0.5);
+  }
+
+  .option.selected .opt-letter {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .opt-letter {
+    min-width: 28px; height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: var(--muted);
+    transition: all 0.18s;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .opt-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    padding-top: 3px;
+  }
+
+  /* Submit button */
+  .submit-wrap { margin-top: 1.5rem; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .submit-btn:hover::after { opacity: 1; }
+  .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+
+  .submit-btn:disabled {
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .submit-btn:disabled::after { display: none; }
+
+  /* Result */
+  .result-wrap { animation: fadeDown 0.5s ease both; }
+
+  .result-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,99,255,0.15), transparent 70%);
+    top: -100px; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .score-ring {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    border: 3px solid;
+    position: relative;
+  }
+
+  .score-ring.great { border-color: var(--correct); box-shadow: 0 0 30px rgba(34,197,94,0.25); }
+  .score-ring.ok    { border-color: #f59e0b;        box-shadow: 0 0 30px rgba(245,158,11,0.25); }
+  .score-ring.low   { border-color: var(--wrong);   box-shadow: 0 0 30px rgba(244,63,94,0.25); }
+
+  .score-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 30px; font-weight: 800;
+    line-height: 1;
+  }
+  .score-ring.great .score-num { color: var(--correct); }
+  .score-ring.ok    .score-num { color: #f59e0b; }
+  .score-ring.low   .score-num { color: var(--wrong); }
+
+  .score-pct { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .result-sub { font-size: 14px; color: var(--muted); }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 1.75rem;
+  }
+
+  .stat-box {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 800;
+  }
+  .stat-val.green { color: var(--correct); }
+  .stat-val.red   { color: var(--wrong); }
+  .stat-val.blue  { color: var(--accent2); }
+  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Gabarito cards */
+  .gabarito-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    padding-left: 4px;
+  }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 1.5rem;
+    margin-bottom: 0.75rem;
+    animation: slideUp 0.4s ease both;
+  }
+
+  .result-card-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .result-badge {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .result-badge.correct { background: rgba(34,197,94,0.15); color: var(--correct); border: 1px solid rgba(34,197,94,0.25); }
+  .result-badge.wrong   { background: rgba(244,63,94,0.15);  color: var(--wrong);   border: 1px solid rgba(244,63,94,0.25); }
+
+  .result-q-text {
+    font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 1rem; line-height: 1.5;
+  }
+
+  .opt-result {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    margin-bottom: 6px;
+    font-size: 13.5px;
+    border: 1px solid transparent;
+  }
+  .opt-result.correct { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.25); color: #4ade80; }
+  .opt-result.wrong   { background: rgba(244,63,94,0.1);  border-color: rgba(244,63,94,0.25);  color: #fb7185; }
+  .opt-result.neutral { background: var(--surface2); color: var(--muted); }
+
+  .opt-result-icon {
+    min-width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .opt-result.correct .opt-result-icon { background: rgba(34,197,94,0.2); }
+  .opt-result.wrong   .opt-result-icon { background: rgba(244,63,94,0.2); }
+  .opt-result.neutral .opt-result-icon { background: rgba(255,255,255,0.05); }
+
+  /* Retake */
+  .retake-btn {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid rgba(108,99,255,0.4);
+    color: var(--accent2);
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.2s;
+  }
+  .retake-btn:hover { background: rgba(108,99,255,0.1); border-color: var(--accent); }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 2rem 1rem 4rem; }
+    .question-card { padding: 1.25rem; }
+    .result-hero { padding: 2rem 1.25rem; }
+    .stats-grid { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-badge">Material de estudo</div>
+    <h1>Questionário<br>Banco de Dados</h1>
+    <p>15 questões baseadas no resumo — páginas 1 a 76</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label">Progresso</span>
+      <span class="progress-count" id="prog-count">0 / 15</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "O que é um Banco de Dados?",
+    opts: [
+      "Um programa de computador que cria gráficos e relatórios visuais.",
+      "Uma coleção organizada de dados relacionados que interessam a algum usuário ou sistema.",
+      "Um sistema operacional desenvolvido para servidores corporativos.",
+      "Um tipo de linguagem de programação orientada a objetos."
+    ],
+    answer: 1
+  },
+  {
+    q: "Qual é a diferença entre Dado e Informação?",
+    opts: [
+      "São sinônimos e significam exatamente a mesma coisa.",
+      "Dado é o resultado processado; informação é o elemento bruto.",
+      "Dado é o elemento bruto; informação é o dado processado e contextualizado.",
+      "Dado só existe em bancos relacionais; informação só em NoSQL."
+    ],
+    answer: 2
+  },
+  {
+    q: "Arquivos JSON e XML são exemplos de qual tipo de dado?",
+    opts: [
+      "Dados estruturados.",
+      "Dados semiestruturados.",
+      "Dados não estruturados.",
+      "Dados binários."
+    ],
+    answer: 1
+  },
+  {
+    q: "O que significa a sigla SQL?",
+    opts: [
+      "Structured Query Language — Linguagem de Consulta Estruturada.",
+      "Software Query Language — Linguagem de Consulta de Software.",
+      "System Query Logic — Lógica de Consulta do Sistema.",
+      "Server Query Line — Linha de Consulta do Servidor."
+    ],
+    answer: 0
+  },
+  {
+    q: "Por que o SQL é chamado de linguagem declarativa?",
+    opts: [
+      "Porque você declara variáveis antes de usá-las no código.",
+      "Porque é preciso declarar qual SGBD será usado antes de executar.",
+      "Porque você diz O QUE quer, sem precisar dizer como buscar.",
+      "Porque declara o número de tabelas antes de criar o banco."
+    ],
+    answer: 2
+  },
+  {
+    q: "O que é um SGBD (Sistema Gerenciador de Banco de Dados)?",
+    opts: [
+      "Um tipo de dado semiestruturado usado em XML.",
+      "O software que gerencia, organiza e manipula os dados.",
+      "A linguagem usada para criar relatórios gerenciais.",
+      "Um servidor web que hospeda aplicações e sites."
+    ],
+    answer: 1
+  },
+  {
+    q: "Qual SGBD relacional é gratuito, robusto e conhecido pelo símbolo do elefante?",
+    opts: [
+      "MySQL",
+      "Oracle Database",
+      "SQLite",
+      "PostgreSQL"
+    ],
+    answer: 3
+  },
+  {
+    q: "Qual é uma desvantagem dos bancos de dados relacionais?",
+    opts: [
+      "Não possuem controle de transações bancárias.",
+      "Dificuldade em escalar para atender muitos usuários simultâneos.",
+      "Não suportam a linguagem SQL para consultas.",
+      "Não permitem criar tabelas com múltiplas colunas."
+    ],
+    answer: 1
+  },
+  {
+    q: "O MongoDB é um banco de dados NoSQL de qual tipo?",
+    opts: [
+      "Colunas largas.",
+      "Chave-Valor.",
+      "Documento (JSON).",
+      "Grafo."
+    ],
+    answer: 2
+  },
+  {
+    q: "Qual banco de dados NoSQL armazena dados diretamente na memória RAM para velocidade extrema?",
+    opts: [
+      "MongoDB",
+      "Cassandra",
+      "CouchDB",
+      "Redis"
+    ],
+    answer: 3
+  },
+  {
+    q: "Quando é mais indicado usar um banco relacional em vez de NoSQL?",
+    opts: [
+      "Quando o volume de dados é gigante e completamente imprevisível.",
+      "Quando os dados mudam com muita frequência e são altamente dinâmicos.",
+      "Quando se precisa de garantias ACID e os dados são previsíveis e estruturados.",
+      "Quando a distribuição geográfica dos dados é ampla e descentralizada."
+    ],
+    answer: 2
+  },
+  {
+    q: "Na arquitetura cliente-servidor, o que é o MySQL Workbench?",
+    opts: [
+      "Um tipo de banco de dados NoSQL baseado em documentos.",
+      "Um cliente (interface gráfica) para gerenciar bancos MySQL.",
+      "Um servidor web para hospedar aplicações web.",
+      "Uma linguagem de consulta alternativa ao SQL."
+    ],
+    answer: 1
+  },
+  {
+    q: "O que é o Modelo Conceitual na modelagem de banco de dados?",
+    opts: [
+      "O conjunto de comandos SQL que cria o banco de dados de verdade.",
+      "A etapa que define colunas com tipos de dados específicos como INT e VARCHAR.",
+      "O modelo de mais alto nível, próximo do entendimento humano, sem definir tecnologia.",
+      "A etapa responsável por normalizar as tabelas e aplicar as formas normais."
+    ],
+    answer: 2
+  },
+  {
+    q: "O que é uma Chave Primária (PK)?",
+    opts: [
+      "Uma coluna que pode ter valores repetidos para facilitar buscas.",
+      "A senha de acesso ao sistema de gerenciamento do banco de dados.",
+      "Um campo que identifica cada linha de forma única, sem repetição e sem valor nulo.",
+      "Uma chave usada exclusivamente para relacionar duas tabelas diferentes."
+    ],
+    answer: 2
+  },
+  {
+    q: "O que a Primeira Forma Normal (1FN) exige?",
+    opts: [
+      "Que atributos não-chave sejam completamente independentes entre si.",
+      "Que cada célula da tabela contenha apenas um valor único e indivisível.",
+      "Que colunas calculáveis sejam removidas e substituídas por expressões SQL.",
+      "Que atributos não-chave dependam totalmente da chave primária composta."
+    ],
+    answer: 1
+  }
+];
+
+let selected = new Array(questions.length).fill(null);
+let submitted = false;
+const letters = ['A','B','C','D'];
+
+function updateProgress() {
+  const n = selected.filter(s => s !== null).length;
+  const pct = (n / questions.length * 100).toFixed(1);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-count').textContent = n + ' / ' + questions.length;
+}
+
+function render() {
+  const area = document.getElementById('quiz-area');
+  if (submitted) { renderResult(area); return; }
+
+  let html = '';
+  questions.forEach((q, qi) => {
+    const isAns = selected[qi] !== null;
+    html += `<div class="question-card" style="animation-delay:${qi * 0.04}s">
+      <div class="q-meta">
+        <span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>
+        <span class="q-status${isAns ? ' answered' : ''}"></span>
+      </div>
+      <div class="q-text">${q.q}</div>`;
+    q.opts.forEach((opt, oi) => {
+      const sel = selected[qi] === oi;
+      html += `<div class="option${sel ? ' selected' : ''}" onclick="pick(${qi},${oi})">
+        <div class="opt-letter">${letters[oi]}</div>
+        <div class="opt-text">${opt}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  const allDone = selected.every(s => s !== null);
+  html += `<div class="submit-wrap">
+    <button class="submit-btn" ${allDone ? '' : 'disabled'} onclick="doSubmit()">
+      ${allDone ? '→ Ver resultado e gabarito' : 'Responda todas as questões para continuar'}
+    </button>
+  </div>`;
+
+  area.innerHTML = html;
+  updateProgress();
+}
+
+function pick(qi, oi) {
+  if (submitted) return;
+  selected[qi] = oi;
+  render();
+}
+
+function doSubmit() {
+  submitted = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+function renderResult(area) {
+  const correct = selected.filter((s,i) => s === questions[i].answer).length;
+  const wrong = questions.length - correct;
+  const pct = Math.round(correct / questions.length * 100);
+  const ringCls = pct >= 70 ? 'great' : pct >= 50 ? 'ok' : 'low';
+  const msg = pct >= 80 ? 'Excelente!' : pct >= 60 ? 'Bom trabalho!' : pct >= 40 ? 'Continue estudando!' : 'Revise o material!';
+
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-count').textContent = questions.length + ' / ' + questions.length;
+
+  let html = `<div class="result-wrap">
+  <div class="result-hero">
+    <div class="score-ring ${ringCls}">
+      <div class="score-num">${correct}/${questions.length}</div>
+      <div class="score-pct">${pct}%</div>
+    </div>
+    <div class="result-title">${msg}</div>
+    <div class="result-sub">Confira o gabarito completo abaixo</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val green">${correct}</div><div class="stat-lbl">Acertos</div></div>
+      <div class="stat-box"><div class="stat-val red">${wrong}</div><div class="stat-lbl">Erros</div></div>
+      <div class="stat-box"><div class="stat-val blue">${questions.length}</div><div class="stat-lbl">Total</div></div>
+    </div>
+  </div>
+
+  <div class="gabarito-title">Gabarito detalhado</div>`;
+
+  questions.forEach((q, qi) => {
+    const userAns = selected[qi];
+    const isCorrect = userAns === q.answer;
+    const badgeCls = isCorrect ? 'correct' : 'wrong';
+    const badgeTxt = isCorrect ? '✓ Acerto' : '✗ Erro';
+
+    html += `<div class="result-card" style="animation-delay:${qi * 0.03}s">
+      <div class="result-card-header">
+        <span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>
+        <span class="result-badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+      <div class="result-q-text">${q.q}</div>`;
+
+    q.opts.forEach((opt, oi) => {
+      let cls = 'neutral', icon = letters[oi];
+      if (oi === q.answer) { cls = 'correct'; icon = '✓'; }
+      else if (oi === userAns && !isCorrect) { cls = 'wrong'; icon = '✗'; }
+      html += `<div class="opt-result ${cls}">
+        <div class="opt-result-icon">${icon}</div>
+        <span>${opt}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `<button class="retake-btn" onclick="retake()">↺ Refazer questionário</button></div>`;
+  area.innerHTML = html;
+}
+
+function retake() {
+  selected = new Array(questions.length).fill(null);
+  submitted = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
