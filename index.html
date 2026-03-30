@@ -3,23 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Questionário — Banco de Dados</title>
+<title>Questionário Completo — Banco de Dados</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0c0e1a;
     --surface: #13162a;
     --surface2: #1a1e35;
+    --surface3: #202540;
     --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(108,99,255,0.3);
     --accent: #6c63ff;
     --accent2: #a78bfa;
     --correct: #22c55e;
+    --correct-bg: rgba(34,197,94,0.1);
+    --correct-border: rgba(34,197,94,0.3);
     --wrong: #f43f5e;
+    --wrong-bg: rgba(244,63,94,0.1);
+    --wrong-border: rgba(244,63,94,0.3);
     --text: #f0f0ff;
     --muted: #7c7fa8;
     --card-radius: 16px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
@@ -30,410 +35,289 @@
     overflow-x: hidden;
   }
 
-  /* Background grid */
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background-image:
       linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
     background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
-  /* Glow orbs */
-  body::after {
-    content: '';
-    position: fixed;
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
-    top: -200px; right: -200px;
-    pointer-events: none;
-    z-index: 0;
+  .glow1 {
+    position: fixed; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%);
+    top: -150px; right: -150px; pointer-events: none; z-index: 0;
+  }
+  .glow2 {
+    position: fixed; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 70%);
+    bottom: 100px; left: -100px; pointer-events: none; z-index: 0;
   }
 
   .container {
-    max-width: 780px;
+    max-width: 820px;
     margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
-    position: relative;
-    z-index: 1;
+    padding: 3rem 1.5rem 6rem;
+    position: relative; z-index: 1;
   }
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 3rem;
-    animation: fadeDown 0.6s ease both;
-  }
-
+  /* HEADER */
+  .header { text-align: center; margin-bottom: 2.5rem; animation: fadeDown 0.6s ease both; }
   .header-badge {
     display: inline-block;
     background: rgba(108,99,255,0.15);
     border: 1px solid rgba(108,99,255,0.3);
     color: var(--accent2);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 999px;
-    margin-bottom: 1.2rem;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 999px; margin-bottom: 1rem;
   }
-
   .header h1 {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(28px, 5vw, 44px);
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-size: clamp(30px, 5vw, 48px);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.025em;
     background: linear-gradient(135deg, #fff 30%, var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  .header p { color: var(--muted); font-size: 15px; margin-top: 0.75rem; line-height: 1.5; }
 
-  .header p {
-    color: var(--muted);
-    font-size: 15px;
-    margin-top: 0.75rem;
-  }
-
-  /* Progress */
-  .progress-wrap {
-    margin-bottom: 2rem;
+  /* STATS BAR */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 2rem;
     animation: fadeDown 0.6s 0.1s ease both;
   }
-
-  .progress-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+  .stat-chip {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 10px; text-align: center;
   }
+  .stat-chip-val {
+    font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
+    color: var(--accent2);
+  }
+  .stat-chip-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
 
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 2rem; animation: fadeDown 0.6s 0.15s ease both; }
+  .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .progress-label { font-size: 13px; color: var(--muted); }
   .progress-count { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent2); }
-
-  .progress-track {
-    height: 4px;
-    background: var(--surface2);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
+  .progress-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 2px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
     width: 0%;
   }
 
-  /* Question card */
+  /* CATEGORY LABEL */
+  .category-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(108,99,255,0.12);
+    border: 1px solid rgba(108,99,255,0.2);
+    padding: 3px 10px; border-radius: 6px;
+    display: inline-block; margin-bottom: 0.5rem;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin: 2rem 0 1rem; padding-left: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* QUESTION CARD */
   .question-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--card-radius);
     padding: 1.75rem;
     margin-bottom: 1rem;
-    animation: slideUp 0.5s ease both;
     transition: border-color 0.2s;
   }
+  .question-card:hover { border-color: rgba(108,99,255,0.18); }
 
-  .question-card:hover { border-color: rgba(108,99,255,0.2); }
-
-  .q-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1rem;
-  }
-
+  .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
   .q-num {
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: var(--surface2);
-    padding: 4px 10px;
-    border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); background: var(--surface2);
+    padding: 4px 10px; border-radius: 6px;
   }
-
   .q-status {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    transition: all 0.3s;
-    margin-left: auto;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    transition: all 0.3s; margin-left: auto; flex-shrink: 0;
   }
   .q-status.answered { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(108,99,255,0.5); }
 
-  .q-text {
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.6;
-    color: var(--text);
-    margin-bottom: 1.25rem;
-  }
+  .q-text { font-size: 16px; font-weight: 400; line-height: 1.65; color: var(--text); margin-bottom: 1.25rem; }
 
-  /* Options */
+  /* OPTIONS */
   .option {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 10px;
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px; border-radius: 10px;
     border: 1px solid var(--border);
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    background: transparent;
-    user-select: none;
+    margin-bottom: 8px; cursor: pointer;
+    transition: all 0.18s ease; user-select: none;
   }
-
-  .option:hover {
-    background: rgba(108,99,255,0.07);
-    border-color: rgba(108,99,255,0.25);
-  }
-
-  .option.selected {
-    background: rgba(108,99,255,0.12);
-    border-color: rgba(108,99,255,0.5);
-  }
-
-  .option.selected .opt-letter {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+  .option:hover { background: rgba(108,99,255,0.07); border-color: rgba(108,99,255,0.25); }
+  .option.selected { background: rgba(108,99,255,0.12); border-color: rgba(108,99,255,0.5); }
+  .option.selected .opt-letter { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   .opt-letter {
-    min-width: 28px; height: 28px;
-    border-radius: 8px;
+    min-width: 28px; height: 28px; border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.12);
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px; font-weight: 700;
-    color: var(--muted);
-    transition: all 0.18s;
-    flex-shrink: 0;
-    margin-top: 1px;
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--muted); transition: all 0.18s; flex-shrink: 0; margin-top: 1px;
   }
+  .opt-text { font-size: 14px; line-height: 1.5; color: var(--text); padding-top: 3px; }
 
-  .opt-text {
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--text);
-    padding-top: 3px;
-  }
-
-  /* Submit button */
-  .submit-wrap { margin-top: 1.5rem; }
-
+  /* SUBMIT */
+  .submit-wrap { margin-top: 2rem; }
   .submit-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    transition: all 0.2s;
+    width: 100%; padding: 16px;
+    border: none; border-radius: 12px;
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+    letter-spacing: 0.03em; cursor: pointer; transition: all 0.2s;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
-    position: relative;
-    overflow: hidden;
+    color: #fff; position: relative; overflow: hidden;
   }
-
-  .submit-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .submit-btn:hover::after { opacity: 1; }
-  .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,0.35); }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(108,99,255,0.4); }
   .submit-btn:active { transform: translateY(0); }
-
   .submit-btn:disabled {
-    background: var(--surface2);
-    color: var(--muted);
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
+    background: var(--surface2); color: var(--muted);
+    cursor: not-allowed; box-shadow: none; transform: none;
   }
 
-  .submit-btn:disabled::after { display: none; }
-
-  /* Result */
+  /* RESULT HERO */
   .result-wrap { animation: fadeDown 0.5s ease both; }
-
   .result-hero {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--card-radius);
-    padding: 2.5rem 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--card-radius); padding: 2.5rem 2rem;
+    text-align: center; margin-bottom: 2rem;
+    position: relative; overflow: hidden;
   }
-
   .result-hero::before {
     content: '';
-    position: absolute;
-    width: 300px; height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(108,99,255,0.15), transparent 70%);
-    top: -100px; left: 50%; transform: translateX(-50%);
+    position: absolute; width: 350px; height: 350px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,99,255,0.13), transparent 70%);
+    top: -120px; left: 50%; transform: translateX(-50%);
     pointer-events: none;
   }
 
   .score-ring {
-    width: 100px; height: 100px;
-    border-radius: 50%;
+    width: 110px; height: 110px; border-radius: 50%;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    margin: 0 auto 1.5rem;
-    border: 3px solid;
-    position: relative;
+    margin: 0 auto 1.5rem; border: 4px solid;
+    position: relative; z-index: 1;
   }
-
-  .score-ring.great { border-color: var(--correct); box-shadow: 0 0 30px rgba(34,197,94,0.25); }
-  .score-ring.ok    { border-color: #f59e0b;        box-shadow: 0 0 30px rgba(245,158,11,0.25); }
-  .score-ring.low   { border-color: var(--wrong);   box-shadow: 0 0 30px rgba(244,63,94,0.25); }
-
+  .score-ring.great { border-color: var(--correct); box-shadow: 0 0 40px rgba(34,197,94,0.2); }
+  .score-ring.ok    { border-color: #f59e0b;        box-shadow: 0 0 40px rgba(245,158,11,0.2); }
+  .score-ring.low   { border-color: var(--wrong);   box-shadow: 0 0 40px rgba(244,63,94,0.2); }
   .score-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 30px; font-weight: 800;
-    line-height: 1;
+    font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; line-height: 1;
   }
   .score-ring.great .score-num { color: var(--correct); }
   .score-ring.ok    .score-num { color: #f59e0b; }
   .score-ring.low   .score-num { color: var(--wrong); }
-
-  .score-pct { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .score-pct { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
   .result-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 24px; font-weight: 800;
-    letter-spacing: -0.01em;
-    margin-bottom: 6px;
+    font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800;
+    letter-spacing: -0.01em; margin-bottom: 6px;
   }
   .result-sub { font-size: 14px; color: var(--muted); }
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 1.75rem;
+  .result-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-top: 1.75rem;
   }
+  .r-stat { background: var(--surface2); border-radius: 10px; padding: 14px 10px; text-align: center; }
+  .r-stat-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+  .r-stat-val.green { color: var(--correct); }
+  .r-stat-val.red   { color: var(--wrong); }
+  .r-stat-val.blue  { color: var(--accent2); }
+  .r-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
 
-  .stat-box {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 14px 10px;
-    text-align: center;
+  /* GABARITO CARDS */
+  .gabarito-section-title {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin: 2rem 0 1rem; padding-left: 4px;
+    display: flex; align-items: center; gap: 10px;
   }
-
-  .stat-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px; font-weight: 800;
-  }
-  .stat-val.green { color: var(--correct); }
-  .stat-val.red   { color: var(--wrong); }
-  .stat-val.blue  { color: var(--accent2); }
-  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
-
-  /* Gabarito cards */
-  .gabarito-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1rem;
-    padding-left: 4px;
-  }
+  .gabarito-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--card-radius);
-    padding: 1.5rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--card-radius); padding: 1.5rem;
     margin-bottom: 0.75rem;
-    animation: slideUp 0.4s ease both;
   }
-
-  .result-card-header {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 1rem;
-  }
-
+  .result-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
   .result-badge {
-    font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 999px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 999px; letter-spacing: 0.06em; text-transform: uppercase;
   }
-  .result-badge.correct { background: rgba(34,197,94,0.15); color: var(--correct); border: 1px solid rgba(34,197,94,0.25); }
-  .result-badge.wrong   { background: rgba(244,63,94,0.15);  color: var(--wrong);   border: 1px solid rgba(244,63,94,0.25); }
-
-  .result-q-text {
-    font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 1rem; line-height: 1.5;
-  }
+  .result-badge.correct { background: var(--correct-bg); color: var(--correct); border: 1px solid var(--correct-border); }
+  .result-badge.wrong   { background: var(--wrong-bg);   color: var(--wrong);   border: 1px solid var(--wrong-border); }
+  .result-q-text { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 1rem; line-height: 1.55; }
 
   .opt-result {
     display: flex; align-items: flex-start; gap: 10px;
-    padding: 10px 12px;
-    border-radius: 9px;
-    margin-bottom: 6px;
-    font-size: 13.5px;
-    border: 1px solid transparent;
+    padding: 10px 12px; border-radius: 9px; margin-bottom: 6px;
+    font-size: 13.5px; border: 1px solid transparent;
   }
-  .opt-result.correct { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.25); color: #4ade80; }
-  .opt-result.wrong   { background: rgba(244,63,94,0.1);  border-color: rgba(244,63,94,0.25);  color: #fb7185; }
+  .opt-result.correct { background: var(--correct-bg); border-color: var(--correct-border); color: #4ade80; }
+  .opt-result.wrong   { background: var(--wrong-bg);   border-color: var(--wrong-border);   color: #fb7185; }
   .opt-result.neutral { background: var(--surface2); color: var(--muted); }
-
   .opt-result-icon {
     min-width: 20px; height: 20px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    border-radius: 5px;
-    flex-shrink: 0;
-    margin-top: 1px;
+    font-size: 12px; font-weight: 700; border-radius: 5px;
+    flex-shrink: 0; margin-top: 1px;
   }
   .opt-result.correct .opt-result-icon { background: rgba(34,197,94,0.2); }
   .opt-result.wrong   .opt-result-icon { background: rgba(244,63,94,0.2); }
   .opt-result.neutral .opt-result-icon { background: rgba(255,255,255,0.05); }
 
-  /* Retake */
+  /* RETAKE */
   .retake-btn {
-    width: 100%;
-    padding: 13px;
-    background: transparent;
+    width: 100%; padding: 14px; background: transparent;
     border: 1px solid rgba(108,99,255,0.4);
-    color: var(--accent2);
-    border-radius: 12px;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: all 0.2s;
+    color: var(--accent2); border-radius: 12px;
+    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 1rem; transition: all 0.2s;
   }
   .retake-btn:hover { background: rgba(108,99,255,0.1); border-color: var(--accent); }
+
+  /* CATEGORY FILTER (quiz mode) */
+  .filter-wrap {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 1.5rem; animation: fadeDown 0.6s 0.2s ease both;
+  }
+  .filter-chip {
+    padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+    cursor: default; background: var(--surface);
+    font-weight: 500;
+  }
+  .filter-chip span { color: var(--accent2); font-family: 'Syne', sans-serif; font-weight: 700; margin-left: 4px; }
 
   @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-16px); }
@@ -444,198 +328,487 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 520px) {
     .container { padding: 2rem 1rem 4rem; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
     .question-card { padding: 1.25rem; }
     .result-hero { padding: 2rem 1.25rem; }
-    .stats-grid { gap: 8px; }
   }
 </style>
 </head>
 <body>
+<div class="glow1"></div>
+<div class="glow2"></div>
+
 <div class="container">
   <div class="header">
-    <div class="header-badge">Material de estudo</div>
-    <h1>Questionário<br>Banco de Dados</h1>
-    <p>15 questões baseadas no resumo — páginas 1 a 76</p>
+    <div class="header-badge">Material de estudo · Págs. 1–76</div>
+    <h1>Questionário Completo<br>Banco de Dados</h1>
+    <p>30 questões abrangentes cobrindo todos os tópicos do material</p>
+  </div>
+
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-chip"><div class="stat-chip-val">30</div><div class="stat-chip-lbl">Questões</div></div>
+    <div class="stat-chip"><div class="stat-chip-val">6</div><div class="stat-chip-lbl">Categorias</div></div>
+    <div class="stat-chip"><div class="stat-chip-val" id="answered-count">0</div><div class="stat-chip-lbl">Respondidas</div></div>
+    <div class="stat-chip"><div class="stat-chip-val" id="remaining-count">30</div><div class="stat-chip-lbl">Restantes</div></div>
   </div>
 
   <div class="progress-wrap">
     <div class="progress-info">
-      <span class="progress-label">Progresso</span>
-      <span class="progress-count" id="prog-count">0 / 15</span>
+      <span class="progress-label">Progresso do questionário</span>
+      <span class="progress-count" id="prog-count">0 / 30</span>
     </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="prog-fill"></div>
-    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
   </div>
 
   <div id="quiz-area"></div>
 </div>
 
 <script>
-const questions = [
-  {
-    q: "O que é um Banco de Dados?",
-    opts: [
-      "Um programa de computador que cria gráficos e relatórios visuais.",
-      "Uma coleção organizada de dados relacionados que interessam a algum usuário ou sistema.",
-      "Um sistema operacional desenvolvido para servidores corporativos.",
-      "Um tipo de linguagem de programação orientada a objetos."
-    ],
-    answer: 1
-  },
-  {
-    q: "Qual é a diferença entre Dado e Informação?",
-    opts: [
-      "São sinônimos e significam exatamente a mesma coisa.",
-      "Dado é o resultado processado; informação é o elemento bruto.",
-      "Dado é o elemento bruto; informação é o dado processado e contextualizado.",
-      "Dado só existe em bancos relacionais; informação só em NoSQL."
-    ],
-    answer: 2
-  },
-  {
-    q: "Arquivos JSON e XML são exemplos de qual tipo de dado?",
-    opts: [
-      "Dados estruturados.",
-      "Dados semiestruturados.",
-      "Dados não estruturados.",
-      "Dados binários."
-    ],
-    answer: 1
-  },
-  {
-    q: "O que significa a sigla SQL?",
-    opts: [
-      "Structured Query Language — Linguagem de Consulta Estruturada.",
-      "Software Query Language — Linguagem de Consulta de Software.",
-      "System Query Logic — Lógica de Consulta do Sistema.",
-      "Server Query Line — Linha de Consulta do Servidor."
-    ],
-    answer: 0
-  },
-  {
-    q: "Por que o SQL é chamado de linguagem declarativa?",
-    opts: [
-      "Porque você declara variáveis antes de usá-las no código.",
-      "Porque é preciso declarar qual SGBD será usado antes de executar.",
-      "Porque você diz O QUE quer, sem precisar dizer como buscar.",
-      "Porque declara o número de tabelas antes de criar o banco."
-    ],
-    answer: 2
-  },
-  {
-    q: "O que é um SGBD (Sistema Gerenciador de Banco de Dados)?",
-    opts: [
-      "Um tipo de dado semiestruturado usado em XML.",
-      "O software que gerencia, organiza e manipula os dados.",
-      "A linguagem usada para criar relatórios gerenciais.",
-      "Um servidor web que hospeda aplicações e sites."
-    ],
-    answer: 1
-  },
-  {
-    q: "Qual SGBD relacional é gratuito, robusto e conhecido pelo símbolo do elefante?",
-    opts: [
-      "MySQL",
-      "Oracle Database",
-      "SQLite",
-      "PostgreSQL"
-    ],
-    answer: 3
-  },
-  {
-    q: "Qual é uma desvantagem dos bancos de dados relacionais?",
-    opts: [
-      "Não possuem controle de transações bancárias.",
-      "Dificuldade em escalar para atender muitos usuários simultâneos.",
-      "Não suportam a linguagem SQL para consultas.",
-      "Não permitem criar tabelas com múltiplas colunas."
-    ],
-    answer: 1
-  },
-  {
-    q: "O MongoDB é um banco de dados NoSQL de qual tipo?",
-    opts: [
-      "Colunas largas.",
-      "Chave-Valor.",
-      "Documento (JSON).",
-      "Grafo."
-    ],
-    answer: 2
-  },
-  {
-    q: "Qual banco de dados NoSQL armazena dados diretamente na memória RAM para velocidade extrema?",
-    opts: [
-      "MongoDB",
-      "Cassandra",
-      "CouchDB",
-      "Redis"
-    ],
-    answer: 3
-  },
-  {
-    q: "Quando é mais indicado usar um banco relacional em vez de NoSQL?",
-    opts: [
-      "Quando o volume de dados é gigante e completamente imprevisível.",
-      "Quando os dados mudam com muita frequência e são altamente dinâmicos.",
-      "Quando se precisa de garantias ACID e os dados são previsíveis e estruturados.",
-      "Quando a distribuição geográfica dos dados é ampla e descentralizada."
-    ],
-    answer: 2
-  },
-  {
-    q: "Na arquitetura cliente-servidor, o que é o MySQL Workbench?",
-    opts: [
-      "Um tipo de banco de dados NoSQL baseado em documentos.",
-      "Um cliente (interface gráfica) para gerenciar bancos MySQL.",
-      "Um servidor web para hospedar aplicações web.",
-      "Uma linguagem de consulta alternativa ao SQL."
-    ],
-    answer: 1
-  },
-  {
-    q: "O que é o Modelo Conceitual na modelagem de banco de dados?",
-    opts: [
-      "O conjunto de comandos SQL que cria o banco de dados de verdade.",
-      "A etapa que define colunas com tipos de dados específicos como INT e VARCHAR.",
-      "O modelo de mais alto nível, próximo do entendimento humano, sem definir tecnologia.",
-      "A etapa responsável por normalizar as tabelas e aplicar as formas normais."
-    ],
-    answer: 2
-  },
-  {
-    q: "O que é uma Chave Primária (PK)?",
-    opts: [
-      "Uma coluna que pode ter valores repetidos para facilitar buscas.",
-      "A senha de acesso ao sistema de gerenciamento do banco de dados.",
-      "Um campo que identifica cada linha de forma única, sem repetição e sem valor nulo.",
-      "Uma chave usada exclusivamente para relacionar duas tabelas diferentes."
-    ],
-    answer: 2
-  },
-  {
-    q: "O que a Primeira Forma Normal (1FN) exige?",
-    opts: [
-      "Que atributos não-chave sejam completamente independentes entre si.",
-      "Que cada célula da tabela contenha apenas um valor único e indivisível.",
-      "Que colunas calculáveis sejam removidas e substituídas por expressões SQL.",
-      "Que atributos não-chave dependam totalmente da chave primária composta."
-    ],
-    answer: 1
-  }
-];
+const categories = {
+  "Conceitos Fundamentais": [
+    {
+      q: "O que é um Banco de Dados?",
+      opts: [
+        "Um programa que executa cálculos matemáticos complexos.",
+        "Uma coleção organizada de dados relacionados que interessam a algum usuário ou sistema.",
+        "Um sistema operacional voltado para servidores corporativos.",
+        "Uma linguagem de programação orientada a objetos."
+      ],
+      answer: 1
+    },
+    {
+      q: "Qual é a diferença correta entre Dado e Informação?",
+      opts: [
+        "Dado é informação processada; informação é o dado bruto.",
+        "São termos sinônimos usados de forma intercambiável.",
+        "Dado é o elemento bruto (ex: '25'); informação é o dado processado e contextualizado (ex: '25 anos de idade').",
+        "Dado só existe em formato digital; informação pode ser física ou digital."
+      ],
+      answer: 2
+    },
+    {
+      q: "Qual das afirmações abaixo é uma característica dos dados ESTRUTURADOS?",
+      opts: [
+        "Não seguem nenhum modelo pré-definido.",
+        "São organizados, rotulados e seguem um modelo estrito definido, como em bancos relacionais.",
+        "Combinam características de dados organizados e não organizados.",
+        "São armazenados exclusivamente em formato de texto livre."
+      ],
+      answer: 1
+    },
+    {
+      q: "Arquivos JSON e XML são classificados como qual tipo de dado?",
+      opts: [
+        "Dados estruturados — possuem tabelas rígidas.",
+        "Dados semiestruturados — têm organização por marcadores/tags, mas sem modelo estritamente fixo.",
+        "Dados não estruturados — não seguem nenhuma organização.",
+        "Dados binários — armazenados em formato de bits."
+      ],
+      answer: 1
+    },
+    {
+      q: "No contexto de dados semiestruturados, o que torna o XML autodescritivo?",
+      opts: [
+        "O fato de ser gerado exclusivamente por sistemas automáticos.",
+        "A obrigatoriedade de usar tabelas com colunas fixas.",
+        "As tags que viajam junto com o dado, identificando seu conteúdo sem precisar de tabela fixa.",
+        "A linguagem SQL integrada ao formato XML."
+      ],
+      answer: 2
+    },
+    {
+      q: "Para dados não estruturados como vídeos, imagens e áudios, qual é o armazenamento mais recomendado?",
+      opts: [
+        "Banco de dados relacional (SQL).",
+        "Arquivos JSON locais.",
+        "Object Storage em nuvem (armazenamento em nuvem de objetos).",
+        "Planilhas do Excel."
+      ],
+      answer: 2
+    },
+    {
+      q: "O que são Bancos de Dados de Vetores, como Pinecone e Milvus?",
+      opts: [
+        "Bancos de dados relacionais com suporte a múltiplos idiomas.",
+        "Uma forma de guardar dados não estruturados como coordenadas matemáticas (vetores), permitindo fazer perguntas ao conteúdo por IA.",
+        "Sistemas de backup para bancos de dados SQL.",
+        "Ferramentas de visualização de dados geográficos."
+      ],
+      answer: 1
+    }
+  ],
+  "Banco de Dados Relacional (SQL)": [
+    {
+      q: "O que significa a sigla SQL?",
+      opts: [
+        "Server Query Language — Linguagem de Consulta de Servidor.",
+        "Structured Query Language — Linguagem de Consulta Estruturada.",
+        "System Query Logic — Lógica de Consulta do Sistema.",
+        "Software Query Line — Linha de Consulta de Software."
+      ],
+      answer: 1
+    },
+    {
+      q: "Por que o SQL é chamado de linguagem DECLARATIVA?",
+      opts: [
+        "Porque o programador precisa declarar todas as variáveis antes de usá-las.",
+        "Porque é necessário declarar qual SGBD será utilizado no início do código.",
+        "Porque você descreve O QUE quer como resultado, e o banco decide automaticamente como buscar.",
+        "Porque declara o número de tabelas antes de criar o banco."
+      ],
+      answer: 2
+    },
+    {
+      q: "O que é um SGBD (Sistema Gerenciador de Banco de Dados)?",
+      opts: [
+        "Um tipo específico de dado semiestruturado.",
+        "O software que gerencia, organiza e manipula os dados — é o intermediário entre o usuário e os dados.",
+        "O conjunto de tabelas e registros armazenados.",
+        "Um servidor web responsável por hospedar aplicações."
+      ],
+      answer: 1
+    },
+    {
+      q: "Usando a analogia da biblioteca, o que representa o SGBD?",
+      opts: [
+        "Os livros nas estantes — a informação bruta guardada.",
+        "O prédio da biblioteca — a infraestrutura física.",
+        "O bibliotecário e o catálogo — quem sabe onde está tudo, controla o acesso e protege o acervo.",
+        "O leitor — o usuário que consome a informação."
+      ],
+      answer: 2
+    },
+    {
+      q: "Qual é uma vantagem do banco de dados relacional?",
+      opts: [
+        "Suporte nativo a dados não estruturados como imagens e vídeos.",
+        "Facilidade de escalar para bilhões de usuários simultâneos.",
+        "Controle de concorrência: organiza a ordem quando vários usuários tentam gravar ao mesmo tempo.",
+        "Armazenamento de dados diretamente na memória RAM."
+      ],
+      answer: 2
+    },
+    {
+      q: "Qual é um ponto NEGATIVO dos bancos de dados relacionais?",
+      opts: [
+        "Não possuem controle de transações.",
+        "Não suportam a linguagem SQL.",
+        "Dificuldade de escalabilidade — quando muitos usuários acessam simultaneamente, o sistema pode parar.",
+        "Não permitem criar relacionamentos entre tabelas."
+      ],
+      answer: 2
+    },
+    {
+      q: "O que é o particionamento VERTICAL de dados?",
+      opts: [
+        "Dividir as linhas da tabela em partes menores por período de tempo.",
+        "Dividir as colunas da tabela — colunas frequentes em uma partição e raramente acessadas em outra.",
+        "Replicar os dados em múltiplos servidores geograficamente distribuídos.",
+        "Separar o banco de dados em arquivos de texto simples."
+      ],
+      answer: 1
+    },
+    {
+      q: "Qual SGBD é gratuito, popular para web e utilizado por Facebook, Netflix e Uber?",
+      opts: ["Oracle Database", "SQL Server", "MySQL", "PostgreSQL"],
+      answer: 2
+    },
+    {
+      q: "O PostgreSQL é representado pelo símbolo de um elefante. Qual é o motivo?",
+      opts: [
+        "Porque foi criado na África.",
+        "Porque ocupa muito espaço em memória.",
+        "Porque a memória do elefante é muito boa — simbolizando a confiabilidade e robustez do banco.",
+        "Porque o projeto foi financiado por zoológicos."
+      ],
+      answer: 2
+    },
+    {
+      q: "O SQLite é indicado principalmente para qual cenário?",
+      opts: [
+        "Grandes corporações com milhões de acessos simultâneos.",
+        "Guardar dados localmente dentro de um aplicativo, como apps móveis e navegadores.",
+        "Bancos financeiros com necessidade de ACID extremo.",
+        "Sistemas distribuídos geograficamente."
+      ],
+      answer: 1
+    }
+  ],
+  "Banco de Dados Não Relacional (NoSQL)": [
+    {
+      q: "O que diferencia os bancos NoSQL dos bancos relacionais?",
+      opts: [
+        "NoSQL só funciona em ambiente de nuvem.",
+        "NoSQL não segue o modelo de linhas, colunas e relacionamentos fixos — é mais flexível.",
+        "NoSQL utiliza obrigatoriamente a linguagem SQL.",
+        "NoSQL só armazena dados numéricos."
+      ],
+      answer: 1
+    },
+    {
+      q: "O MongoDB armazena dados em qual formato?",
+      opts: [
+        "Tabelas relacionais com chave primária.",
+        "Colunas largas distribuídas em múltiplos servidores.",
+        "Documentos flexíveis no formato JSON (chaves e valores).",
+        "Pares chave-valor diretamente na memória RAM."
+      ],
+      answer: 2
+    },
+    {
+      q: "O Redis é um banco NoSQL do tipo Chave-Valor. Qual é sua principal característica?",
+      opts: [
+        "Armazena dados em disco rígido para máxima durabilidade.",
+        "Armazena dados diretamente na memória RAM, permitindo leitura e escrita quase instantâneas.",
+        "Utiliza esquema XML para organizar os documentos.",
+        "Foi projetado exclusivamente para dados geoespaciais."
+      ],
+      answer: 1
+    },
+    {
+      q: "O CouchDB é indicado para qual tipo de aplicação?",
+      opts: [
+        "Sistemas financeiros que exigem garantias ACID.",
+        "Aplicações onde os usuários precisam trabalhar offline e sincronizar os dados depois.",
+        "Bancos de dados para análise em tempo real de grandes volumes.",
+        "Sistemas de armazenamento de imagens e vídeos."
+      ],
+      answer: 1
+    },
+    {
+      q: "O Cassandra é um banco NoSQL de Colunas Largas. Para que ele foi projetado?",
+      opts: [
+        "Guardar documentos localmente dentro de aplicativos móveis.",
+        "Gerenciar transações financeiras com total segurança ACID.",
+        "Lidar com volumes gigantescos de dados distribuídos em muitos servidores, garantindo disponibilidade extrema.",
+        "Processar apenas consultas SQL complexas."
+      ],
+      answer: 2
+    },
+    {
+      q: "Uma instituição financeira precisa registrar transferências bancárias. Qual banco de dados usar e por quê?",
+      opts: [
+        "NoSQL (MongoDB), pois é mais rápido para gravações.",
+        "NoSQL (Redis), pois usa memória RAM.",
+        "Relacional (SQL), pois exige garantias ACID — se houver falha, a transação é cancelada para evitar perda ou duplicação de dinheiro.",
+        "Qualquer banco serve, não importa a escolha."
+      ],
+      answer: 2
+    },
+    {
+      q: "Para registrar o histórico de cliques dos usuários em um aplicativo bancário, qual banco usar?",
+      opts: [
+        "Relacional, pois oferece maior segurança.",
+        "NoSQL, pois precisa de velocidade e não é dado financeiro crítico.",
+        "SQLite, pois funciona localmente.",
+        "Oracle, pois é o mais robusto."
+      ],
+      answer: 1
+    },
+    {
+      q: "Se você fosse criar um filtro de spam para o Gmail (que atende usuários do mundo inteiro), qual banco seria obrigatório?",
+      opts: [
+        "Relacional, pois os dados são centralizados.",
+        "SQLite, pois é leve e portátil.",
+        "NoSQL, pois exige ampla distribuição geográfica dos dados.",
+        "Oracle Database, pois é o mais caro e robusto."
+      ],
+      answer: 2
+    }
+  ],
+  "Arquitetura Cliente-Servidor": [
+    {
+      q: "Na arquitetura cliente-servidor, qual é o papel do CLIENTE?",
+      opts: [
+        "Armazenar e processar os dados.",
+        "Fazer a solicitação ao servidor — como um navegador web ou uma interface gráfica.",
+        "Gerenciar as transações e o controle de concorrência.",
+        "Hospedar o banco de dados e os arquivos do sistema."
+      ],
+      answer: 1
+    },
+    {
+      q: "O MySQL Workbench, o SSMS e o Studio3T são exemplos de quê?",
+      opts: [
+        "Tipos de bancos de dados NoSQL.",
+        "Linguagens de programação para bancos de dados.",
+        "Clientes — interfaces gráficas que permitem gerenciar bancos de dados sem digitar comandos complexos.",
+        "Servidores web de alta disponibilidade."
+      ],
+      answer: 2
+    }
+  ],
+  "Modelagem de Banco de Dados": [
+    {
+      q: "Para que servem os modelos de banco de dados (conceitual, lógico e físico)?",
+      opts: [
+        "Apenas para documentação interna dos desenvolvedores.",
+        "Descrever a estrutura do banco, auxiliar desenvolvedores e servir de documentação para o cliente.",
+        "Substituir a necessidade de escrever código SQL.",
+        "Definir a velocidade de acesso ao banco de dados."
+      ],
+      answer: 1
+    },
+    {
+      q: "O que é o Modelo Conceitual?",
+      opts: [
+        "O conjunto de comandos SQL que cria as tabelas no banco.",
+        "A etapa que define colunas, tipos de dados e chaves estrangeiras.",
+        "O modelo de mais alto nível de abstração, próximo do entendimento humano, que não define o SGBD ainda.",
+        "A representação física dos dados em disco."
+      ],
+      answer: 2
+    },
+    {
+      q: "Qual é a diferença entre MER e DER?",
+      opts: [
+        "MER é para bancos relacionais e DER é para NoSQL.",
+        "MER é a parte teórica/conceitual (define entidades, atributos e relacionamentos); DER é a representação gráfica do MER usando retângulos e losangos.",
+        "MER e DER são nomes diferentes para a mesma coisa.",
+        "DER é a parte conceitual e MER é a representação gráfica."
+      ],
+      answer: 1
+    },
+    {
+      q: "Qual software é o mais utilizado em universidades brasileiras para criar o Modelo Conceitual (DER)?",
+      opts: ["MySQL Workbench", "Oracle SQL Developer", "brModeler", "Studio3T"],
+      answer: 2
+    },
+    {
+      q: "O Modelo Lógico apresenta qual notação visual para os relacionamentos entre tabelas?",
+      opts: [
+        "Notação de Diagrama de Classes (UML).",
+        "Notação de Pé de Galinha (Crow's Foot), com definição de PK e FK.",
+        "Notação de Fluxograma com losangos e retângulos.",
+        "Notação de Grafos com nós e arestas."
+      ],
+      answer: 1
+    },
+    {
+      q: "O que é o Modelo Físico?",
+      opts: [
+        "O esboço inicial das ideias, sem definir tecnologia.",
+        "A planta com as regras de tabelas, independente do SGBD.",
+        "O conjunto de comandos SQL (DDL) que, quando executado em um SGBD, cria o banco de dados de fato.",
+        "A interface gráfica de gerenciamento do banco."
+      ],
+      answer: 2
+    },
+    {
+      q: "No Modelo Físico, o que acontece com as Entidades e os Atributos do Modelo Conceitual?",
+      opts: [
+        "Entidades viram documentos JSON; atributos viram chaves.",
+        "Entidades são transformadas em tabelas; atributos são transformados em colunas com tipos de dados específicos.",
+        "Entidades viram linhas; atributos viram tabelas separadas.",
+        "Entidades e atributos são eliminados e substituídos por código."
+      ],
+      answer: 1
+    }
+  ],
+  "Chaves e Normalização": [
+    {
+      q: "Quais são as três regras obrigatórias para uma Chave Primária (PK)?",
+      opts: [
+        "Pode repetir, pode ser nula, deve ser numérica.",
+        "Unicidade (não pode repetir), Não Nulo (NOT NULL) e Imutabilidade (não deve ser alterada).",
+        "Deve ser texto, deve ser única e pode ser vazia.",
+        "Deve ser gerada automaticamente, ser numérica e pode repetir."
+      ],
+      answer: 1
+    },
+    {
+      q: "Para que serve a Chave Estrangeira (FK)?",
+      opts: [
+        "Identificar cada registro de forma única dentro de sua própria tabela.",
+        "Criptografar os dados sensíveis do banco.",
+        "Criar a ligação entre tabelas, referenciando a Chave Primária de outra tabela.",
+        "Aumentar a velocidade de consulta dentro de uma única tabela."
+      ],
+      answer: 2
+    },
+    {
+      q: "O ID_Cliente é Chave Primária (PK) na tbl_Clientes. Quando ele aparece na tbl_Vendas para relacionar as tabelas, ele é chamado de:",
+      opts: [
+        "Chave Alternada.",
+        "Chave Candidata.",
+        "Chave Composta.",
+        "Chave Estrangeira (FK)."
+      ],
+      answer: 3
+    },
+    {
+      q: "O que é a Chave Alternada?",
+      opts: [
+        "Uma chave que pode ser nula em casos especiais.",
+        "A chave utilizada para relacionamentos entre tabelas.",
+        "As demais chaves candidatas que não foram escolhidas como Chave Primária.",
+        "Uma chave gerada automaticamente pelo SGBD."
+      ],
+      answer: 2
+    },
+    {
+      q: "Qual é o objetivo da Normalização de banco de dados?",
+      opts: [
+        "Aumentar a quantidade de tabelas para melhorar o desempenho.",
+        "Reduzir redundâncias, duplicações e inconsistências para ter um modelo mais consistente.",
+        "Converter dados relacionais em formato NoSQL.",
+        "Criptografar os dados para maior segurança."
+      ],
+      answer: 1
+    },
+    {
+      q: "A Primeira Forma Normal (1FN) exige que:",
+      opts: [
+        "Atributos não-chave sejam independentes entre si.",
+        "Colunas calculáveis sejam removidas da tabela.",
+        "Cada célula da tabela contenha apenas um valor único e indivisível — sem atributos multivalorados.",
+        "Todos os atributos dependam completamente da chave primária."
+      ],
+      answer: 2
+    },
+    {
+      q: "Em uma tabela, um cliente possui dois telefones registrados na mesma célula (multivalorado). Qual é a solução correta pela 1FN?",
+      opts: [
+        "Deixar os dois telefones separados por vírgula na mesma célula.",
+        "Eliminar o campo telefone da tabela.",
+        "Criar uma nova tabela separada para os telefones, relacionada com a tabela de clientes.",
+        "Usar JSON para guardar os dois números na mesma coluna."
+      ],
+      answer: 2
+    },
+    {
+      q: "A Terceira Forma Normal (3FN) exige que os atributos não-chave sejam independentes entre si. Qual coluna deve ser REMOVIDA segundo a 3FN?",
+      opts: [
+        "A coluna ID_Venda, pois ela pode ser calculada.",
+        "A coluna 'total', quando ela é resultado de outras colunas (ex: qtdd × valor_compra) — pois pode ser calculada via SQL.",
+        "A coluna 'nome_produto', pois é redundante.",
+        "A coluna 'data_compra', pois pode ser inferida."
+      ],
+      answer: 1
+    }
+  ]
+};
 
-let selected = new Array(questions.length).fill(null);
+// Flatten all questions
+const allQuestions = [];
+Object.entries(categories).forEach(([cat, qs]) => {
+  qs.forEach(q => allQuestions.push({ ...q, category: cat }));
+});
+
+const TOTAL = allQuestions.length;
+let selected = new Array(TOTAL).fill(null);
 let submitted = false;
 const letters = ['A','B','C','D'];
 
 function updateProgress() {
   const n = selected.filter(s => s !== null).length;
-  const pct = (n / questions.length * 100).toFixed(1);
+  const pct = (n / TOTAL * 100).toFixed(1);
   document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-count').textContent = n + ' / ' + questions.length;
+  document.getElementById('prog-count').textContent = n + ' / ' + TOTAL;
+  document.getElementById('answered-count').textContent = n;
+  document.getElementById('remaining-count').textContent = TOTAL - n;
 }
 
 function render() {
@@ -643,28 +816,37 @@ function render() {
   if (submitted) { renderResult(area); return; }
 
   let html = '';
-  questions.forEach((q, qi) => {
-    const isAns = selected[qi] !== null;
-    html += `<div class="question-card" style="animation-delay:${qi * 0.04}s">
-      <div class="q-meta">
-        <span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>
-        <span class="q-status${isAns ? ' answered' : ''}"></span>
-      </div>
-      <div class="q-text">${q.q}</div>`;
-    q.opts.forEach((opt, oi) => {
-      const sel = selected[qi] === oi;
-      html += `<div class="option${sel ? ' selected' : ''}" onclick="pick(${qi},${oi})">
-        <div class="opt-letter">${letters[oi]}</div>
-        <div class="opt-text">${opt}</div>
-      </div>`;
+  let lastCat = '';
+  let globalIdx = 0;
+
+  Object.entries(categories).forEach(([cat, qs]) => {
+    html += `<div class="section-title">${cat}</div>`;
+    qs.forEach((q, localIdx) => {
+      const qi = globalIdx;
+      const isAns = selected[qi] !== null;
+      html += `<div class="question-card">
+        <div class="q-meta">
+          <div class="category-label">${cat}</div>
+          <span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>
+          <span class="q-status${isAns ? ' answered' : ''}"></span>
+        </div>
+        <div class="q-text">${q.q}</div>`;
+      q.opts.forEach((opt, oi) => {
+        const sel = selected[qi] === oi;
+        html += `<div class="option${sel ? ' selected' : ''}" onclick="pick(${qi},${oi})">
+          <div class="opt-letter">${letters[oi]}</div>
+          <div class="opt-text">${opt}</div>
+        </div>`;
+      });
+      html += `</div>`;
+      globalIdx++;
     });
-    html += `</div>`;
   });
 
   const allDone = selected.every(s => s !== null);
   html += `<div class="submit-wrap">
     <button class="submit-btn" ${allDone ? '' : 'disabled'} onclick="doSubmit()">
-      ${allDone ? '→ Ver resultado e gabarito' : 'Responda todas as questões para continuar'}
+      ${allDone ? '→ Ver resultado e gabarito completo' : `Responda todas as ${TOTAL} questões para continuar`}
     </button>
   </div>`;
 
@@ -685,63 +867,96 @@ function doSubmit() {
 }
 
 function renderResult(area) {
-  const correct = selected.filter((s,i) => s === questions[i].answer).length;
-  const wrong = questions.length - correct;
-  const pct = Math.round(correct / questions.length * 100);
+  const correct = selected.filter((s,i) => s === allQuestions[i].answer).length;
+  const wrong = TOTAL - correct;
+  const pct = Math.round(correct / TOTAL * 100);
   const ringCls = pct >= 70 ? 'great' : pct >= 50 ? 'ok' : 'low';
-  const msg = pct >= 80 ? 'Excelente!' : pct >= 60 ? 'Bom trabalho!' : pct >= 40 ? 'Continue estudando!' : 'Revise o material!';
+  const msg = pct >= 90 ? 'Excelente! Domínio total!' : pct >= 75 ? 'Muito bom trabalho!' : pct >= 60 ? 'Bom! Continue assim!' : pct >= 40 ? 'Revise o material!' : 'Estude mais o conteúdo!';
 
   document.getElementById('prog-fill').style.width = '100%';
-  document.getElementById('prog-count').textContent = questions.length + ' / ' + questions.length;
+  document.getElementById('prog-count').textContent = TOTAL + ' / ' + TOTAL;
+  document.getElementById('answered-count').textContent = TOTAL;
+  document.getElementById('remaining-count').textContent = '0';
+
+  // Per-category score
+  let catResults = {};
+  Object.keys(categories).forEach(cat => { catResults[cat] = { c: 0, t: 0 }; });
+  allQuestions.forEach((q, i) => {
+    catResults[q.category].t++;
+    if (selected[i] === q.answer) catResults[q.category].c++;
+  });
+
+  let catHtml = Object.entries(catResults).map(([cat, r]) => {
+    const p = Math.round(r.c / r.t * 100);
+    const col = p >= 70 ? '#22c55e' : p >= 50 ? '#f59e0b' : '#f43f5e';
+    return `<div class="r-stat" style="text-align:left; padding: 12px 14px;">
+      <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;">${cat}</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="flex:1; height:4px; background:var(--surface3); border-radius:2px; overflow:hidden;">
+          <div style="width:${p}%; height:100%; background:${col}; border-radius:2px;"></div>
+        </div>
+        <span style="font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:${col};">${r.c}/${r.t}</span>
+      </div>
+    </div>`;
+  }).join('');
 
   let html = `<div class="result-wrap">
   <div class="result-hero">
     <div class="score-ring ${ringCls}">
-      <div class="score-num">${correct}/${questions.length}</div>
+      <div class="score-num">${correct}/${TOTAL}</div>
       <div class="score-pct">${pct}%</div>
     </div>
     <div class="result-title">${msg}</div>
-    <div class="result-sub">Confira o gabarito completo abaixo</div>
-    <div class="stats-grid">
-      <div class="stat-box"><div class="stat-val green">${correct}</div><div class="stat-lbl">Acertos</div></div>
-      <div class="stat-box"><div class="stat-val red">${wrong}</div><div class="stat-lbl">Erros</div></div>
-      <div class="stat-box"><div class="stat-val blue">${questions.length}</div><div class="stat-lbl">Total</div></div>
+    <div class="result-sub">Gabarito completo por categoria abaixo</div>
+    <div class="result-stats">
+      <div class="r-stat"><div class="r-stat-val green">${correct}</div><div class="r-stat-lbl">Acertos</div></div>
+      <div class="r-stat"><div class="r-stat-val red">${wrong}</div><div class="r-stat-lbl">Erros</div></div>
+      <div class="r-stat"><div class="r-stat-val blue">${pct}%</div><div class="r-stat-lbl">Aproveitamento</div></div>
     </div>
   </div>
 
-  <div class="gabarito-title">Gabarito detalhado</div>`;
+  <div class="gabarito-section-title">Desempenho por categoria</div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:2rem;">${catHtml}</div>
 
-  questions.forEach((q, qi) => {
-    const userAns = selected[qi];
-    const isCorrect = userAns === q.answer;
-    const badgeCls = isCorrect ? 'correct' : 'wrong';
-    const badgeTxt = isCorrect ? '✓ Acerto' : '✗ Erro';
+  <div class="gabarito-section-title">Gabarito detalhado — todas as questões</div>`;
 
-    html += `<div class="result-card" style="animation-delay:${qi * 0.03}s">
-      <div class="result-card-header">
-        <span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>
-        <span class="result-badge ${badgeCls}">${badgeTxt}</span>
-      </div>
-      <div class="result-q-text">${q.q}</div>`;
+  let gi = 0;
+  Object.entries(categories).forEach(([cat, qs]) => {
+    html += `<div style="font-family:'Syne',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent2); margin: 1.5rem 0 0.75rem; padding-left:4px;">${cat}</div>`;
+    qs.forEach((q) => {
+      const qi = gi;
+      const userAns = selected[qi];
+      const isCorrect = userAns === q.answer;
+      const badgeCls = isCorrect ? 'correct' : 'wrong';
+      const badgeTxt = isCorrect ? '✓ Acerto' : '✗ Erro';
 
-    q.opts.forEach((opt, oi) => {
-      let cls = 'neutral', icon = letters[oi];
-      if (oi === q.answer) { cls = 'correct'; icon = '✓'; }
-      else if (oi === userAns && !isCorrect) { cls = 'wrong'; icon = '✗'; }
-      html += `<div class="opt-result ${cls}">
-        <div class="opt-result-icon">${icon}</div>
-        <span>${opt}</span>
-      </div>`;
+      html += `<div class="result-card">
+        <div class="result-card-header">
+          <span class="q-num">Q${String(qi+1).padStart(2,'0')}</span>
+          <span class="result-badge ${badgeCls}">${badgeTxt}</span>
+        </div>
+        <div class="result-q-text">${q.q}</div>`;
+
+      q.opts.forEach((opt, oi) => {
+        let cls = 'neutral', icon = letters[oi];
+        if (oi === q.answer) { cls = 'correct'; icon = '✓'; }
+        else if (oi === userAns && !isCorrect) { cls = 'wrong'; icon = '✗'; }
+        html += `<div class="opt-result ${cls}">
+          <div class="opt-result-icon">${icon}</div>
+          <span>${opt}</span>
+        </div>`;
+      });
+      html += `</div>`;
+      gi++;
     });
-    html += `</div>`;
   });
 
-  html += `<button class="retake-btn" onclick="retake()">↺ Refazer questionário</button></div>`;
+  html += `<button class="retake-btn" onclick="retake()">↺ Refazer questionário do zero</button></div>`;
   area.innerHTML = html;
 }
 
 function retake() {
-  selected = new Array(questions.length).fill(null);
+  selected = new Array(TOTAL).fill(null);
   submitted = false;
   window.scrollTo({ top: 0, behavior: 'smooth' });
   render();
